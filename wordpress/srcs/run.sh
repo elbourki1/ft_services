@@ -1,7 +1,3 @@
-#!/bin/sh
-rm -f /run/apache2/apache2.pid
-rm -f /run/apache2/httpd.pid
-sed -i "s/ErrorLog logs\/error.log/Errorlog \/dev\/stderr\nTransferlog \/dev\/stdout/" /etc/apache2/httpd.conf
 sed -i "s/define('DB_NAME',null);/define('DB_NAME',$(WORDPRESS_DB_NAME));" /var/www/localhosts/htdocs/wp-config.php
 sed -i "s/define('DB_USER',null);/define('DB_USER',$(WORDPRESS_DB_USER));" /var/www/localhosts/htdocs/wp-config.php
 sed -i "s/define('DB_PASSWORD',null);/define('DB_PASSWORD',$(WORDPRESS_DB_PASSWORD));" /var/www/localhosts/htdocs/wp-config.php
