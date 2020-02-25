@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:10 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/25 16:29:12 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/25 22:37:42 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,6 +42,9 @@ sleep 2
 echo "building ftps_alpine "
 docker build -t ftps_alpine ftps/
 sleep 2
+echo "building influxdb_alpine "
+docker build -t influxdb_alpine influxdb/
+sleep 2
 echo "building grafana_alpine "
 docker build -t grafana_alpine grafana/
 
@@ -54,13 +57,12 @@ kubectl apply -f ftps.yaml
 kubectl apply -f ingress.yaml > /dev/null
 kubectl apply -f influxdb.yaml
 kubectl apply -f grafana.yaml
-kubectl apply -f telegraf.yaml
+# kubectl apply -f telegraf.yaml
 
-sleep 30
 echo "creating database"
-echo "importing database"
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql -u root -e 'CREATE DATABASE wordpress;'
-sleep 10
+echo "importing database"
+sleep 30
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < wordpress/files/wordpress-tmp.sql
 
 rm -rf wordpress/files/wordpress-tmp.sql

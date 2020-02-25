@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:01 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/25 16:27:45 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/25 21:20:26 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,8 +39,6 @@ kind: Deployment
 metadata:
   name: nginx
 spec:
-  restartPolicy: Always
-  type: Recreate
   selector:
     matchLabels:
       app: nginx
@@ -49,6 +47,7 @@ spec:
       labels:
         app: nginx
     spec:
+      restartPolicy: Always
       containers:
       - name: nginx
         image: nginx_alpine

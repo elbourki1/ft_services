@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:43:48 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/25 16:27:18 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/25 22:24:04 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,23 +52,21 @@ spec:
         app: influxdb
     spec:
       restartPolicy: Always
-      type: Recreate
       containers:
       - name: influxdb
-        image: influxdb:1.5.4-alpine
-        env:
-          - name: INFLUXDB_DATABASE
-            value: influxdb
-          - name: INFLUXDB_USERNAME
-            value: root
-          - name: INFLUXDB_USER_PASSWORD
-            value: password
+        image: influxdb_alpine
+        imagePullPolicy: Never
         ports:
         - containerPort: 8086
         volumeMounts:
         - name: influxdb-pvc
           mountPath: /var/lib/influxdb
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
       volumes:
       - name: influxdb-pvc
         persistentVolumeClaim:
           claimName: influxdb-pvc
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock

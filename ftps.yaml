@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:43:41 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/25 16:26:58 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/25 21:49:47 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,14 +50,12 @@ spec:
     matchLabels:
       app: ftps
   replicas: 1
-  strategy:
-    restartPolicy: Always
-    type: Recreate
   template:
     metadata:
       labels:
         app: ftps
     spec:
+      restartPolicy: Always
       containers:
       - image: ftps_alpine
         imagePullPolicy: Never

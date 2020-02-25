@@ -1,0 +1,48 @@
+FROM alpine:3.7
+
+LABEL MAINTAINER="Aurelien PERRIER <a.perrier@gmail.com>"
+LABEL APP="influxdb"
+LABEL APP_REPOSITORY="https://dl.influxdata.com/influxdb/releases/"
+
+ENV TIMEZONE Europe/Paris
+ENV INFLUXDB_VERSION 1.5.3
+
+# Installing packages
+RUN apk add --no-cache su-exec
+
+# Work path
+WORKDIR /scripts
+
+# Downloading binaries
+ADD https://dl.influxdata.com/influxdb/releases/influxdb-${INFLUXDB_VERSION}-static_linux_amd64.tar.gz ./
+RUN addgroup influxdb && \
+        adduser -s /bin/false -G influxdb -S -D influxdb
+
+# Coping scripts
+COPY ./srcs/start.sh start.sh
+
+# Installing binaries
+RUN tar -C . -xzf influxdb-${INFLUXDB_VERSION}-static_linux_amd64.tar.gz && \
+        chmod +x influxdb-*/* && \
+        cp -a influxdb-*/* /usr/bin/ && \
+        rm -rf *.tar.gz* influxdb-*/
+
+ENV TIMEZONE Europe/Paris
+ENV TELEGRAF_VERSION 1.6.3
+
+# Downloading Telegraf
+ADD https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}-static_linux_amd64.tar.gz ./
+
+# Installing packages
+RUN tar -C . -xzf telegraf-${TELEGRAF_VERSION}-static_linux_amd64.tar.gz && \
+        chmod +x telegraf/* && \
+        cp telegraf/telegraf /usr/bin/ && \
+        rm -rf *.tar.gz* telegraf/ 
+
+COPY srcs/telegraf.conf /etc/telegraf/telegraf.conf
+COPY srcs/influxdb.conf /etc/influxdb/influxdb.conf
+VOLUME [ "/var/lib/influxdb" ]
+
+EXPOSE 8086
+
+ENTRYPOINT [ "./start.sh" ]
