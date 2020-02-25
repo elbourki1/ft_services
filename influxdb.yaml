@@ -1,0 +1,74 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    influxdb.yaml                                      :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/02/17 21:43:48 by oel-bour          #+#    #+#              #
+#    Updated: 2020/02/25 16:27:18 by oel-bour         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  selector:
+    app: influxdb
+  ports:
+  - port: 8086
+    targetPort: 8086
+    nodePort: 8086
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pvc
+  labels:
+    app: influxdb
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+spec:
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      restartPolicy: Always
+      type: Recreate
+      containers:
+      - name: influxdb
+        image: influxdb:1.5.4-alpine
+        env:
+          - name: INFLUXDB_DATABASE
+            value: influxdb
+          - name: INFLUXDB_USERNAME
+            value: root
+          - name: INFLUXDB_USER_PASSWORD
+            value: password
+        ports:
+        - containerPort: 8086
+        volumeMounts:
+        - name: influxdb-pvc
+          mountPath: /var/lib/influxdb
+      volumes:
+      - name: influxdb-pvc
+        persistentVolumeClaim:
+          claimName: influxdb-pvc

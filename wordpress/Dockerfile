@@ -1,18 +1,33 @@
 FROM alpine:latest
-ENV  TIME_ZONE=africa/morroco
-ENV WORDPRESS_VERSION=4.9.6
-ENV APACHE_SERVER=/var/www/localhost/htdocs
-RUN apk add --no-cach --virtual .build_deps
-RUN apk add --no-cach apache2 php7 php7-apache2 php7-openssl php7-xml \
-php7-pdo php7-mcrypt php7-session php7-mysqli php7-zlib
+
+ENV TIMEZONE Europe/Paris
+ENV VERSION_WORDPRESS 4.9.6
+ENV APACHE_SERVER_PATH /var/www/localhost/htdocs
+
+# Installing dependencies
+RUN apk add --no-cache --virtual .build-deps unzip
+RUN apk add --no-cache apache2 php7 php7-apache2 php7-openssl php7-xml php7-pdo php7-mcrypt php7-session php7-mysqli php7-zlib su-exec
 RUN mkdir -p /run/apache2 /run/httpd
-WORKDIR /work
-ADD https://wordpress.org/wordpress-${WORDPRESS_VERSION}.zip ./
-RUN unzip -q wordpress-${WORDPRESS_VERSION}.zip && rm -rf ${APACHE_SERVER} && \
-mv wordpress ${APACHE_SERVER} && rm -rf wordpress-${WORDPRESS_VERSION}.zip \
-&& rm $APACHE_SERVER/wp-config-sample.php && rm $APACHE_SERVER/readme.html && \
-rm $APACHE_SERVER/license.txt && chown -R apache:apache ${APACHE_SERVER} && apk del .build_deps
-COPY srcs/run.sh run.sh
-COPY srcs/wp-config.php ${APACHE_SERVER}/wp-config.php
+
+# Work path
+WORKDIR /scripts
+
+# Download & install wordpress
+ADD https://wordpress.org/wordpress-${VERSION_WORDPRESS}.zip ./
+RUN unzip -q wordpress-${VERSION_WORDPRESS}.zip -d ./ && \
+        rm -rf ${APACHE_SERVER_PATH} && \
+        mv wordpress/ ${APACHE_SERVER_PATH} && \
+        rm /scripts/wordpress-${VERSION_WORDPRESS}.zip \
+            ${APACHE_SERVER_PATH}/wp-config-sample.php \
+            ${APACHE_SERVER_PATH}/license.txt \
+            ${APACHE_SERVER_PATH}/readme.html && \
+        chown -R apache:apache ${APACHE_SERVER_PATH} && \
+        apk del .build-deps
+
+# Copy of the HTTPD startup script
+COPY scripts/start.sh start.sh
+COPY files/wp-config.php ${APACHE_SERVER_PATH}/wp-config.php
+
 EXPOSE 80
-CMD ["./run.sh"]
+
+ENTRYPOINT [ "./start.sh" ]
