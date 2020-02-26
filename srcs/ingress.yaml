@@ -1,0 +1,32 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    ingress.yaml                                       :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/02/17 21:43:54 by oel-bour          #+#    #+#              #
+#    Updated: 2020/02/26 15:09:38 by oel-bour         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    nginx.ingress.kubernetes.io.rewrite-target: /
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/proxy-redirect-from: http
+    # nginx.ingress.kubernetes.io/proxy-redirect-to: https
+spec:
+  backend:
+    serviceName: nginx-service
+    servicePort: 80
+  # rules:
+  # - http:
+  #     paths:
+  #     - path: /
+  #       backend:
+  #         serviceName: nginx-service
+  #         servicePort: 80

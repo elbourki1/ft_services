@@ -1,0 +1,53 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    phpmyadmin.yaml                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/02/17 21:44:04 by oel-bour          #+#    #+#              #
+#    Updated: 2020/02/25 20:06:00 by oel-bour         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpmyadmin-service
+spec:
+  selector:
+    app: phpmyadmin
+  ports:
+  - port: 80
+    nodePort: 5000
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: phpmyadmin
+        image: etopian/phpmyadmin
+        ports:
+        - containerPort: 80
+        env:
+        - name: MYSQL_HOSTNAME
+          value: mysql 
+        - name: PMA_USER
+          value: root
+        - name: PMA_PASSWORD
+          value: password
