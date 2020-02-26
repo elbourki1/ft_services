@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:10 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/26 18:03:10 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/26 22:25:01 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,14 +51,15 @@ docker build -t influxdb_alpine srcs/influxdb/
 sleep 2
 echo "building grafana_alpine "
 docker build -t grafana_alpine srcs/grafana/
-
+# docker build -t phpmyadmin_alpine srcs/phpmyadmin-s/
 echo "deploying"
+kubectl apply -f srcs/mandatory.yaml
 kubectl apply -f srcs/wordpress.yaml
 kubectl apply -f srcs/mysql.yaml
 kubectl apply -f srcs/phpmyadmin.yaml
 kubectl apply -f srcs/nginx.yaml
 kubectl apply -f srcs/ftps.yaml
-kubectl apply -f srcs/ingress.yaml > /dev/null
+kubectl apply -f srcs/ingress.yaml
 kubectl apply -f srcs/influxdb.yaml
 kubectl apply -f srcs/grafana.yaml
 
@@ -66,7 +67,7 @@ sleep 60
 echo "creating database"
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql -u root -e 'CREATE DATABASE wordpress;'
 echo "importing database"
-sleep 30
+sleep 5
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < srcs/wordpress/files/wordpress-tmp.sql
 
 rm -rf srcs/wordpress/files/wordpress-tmp.sql

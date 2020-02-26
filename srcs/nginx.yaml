@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:01 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/26 15:12:48 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/26 18:59:00 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,16 +22,29 @@ spec:
   ports:
   - port: 22
     protocol: TCP
-    nodePort: 2222
     name: ssh
   - port: 443
     protocol: TCP
-    nodePort: 443
     name: https
   - port: 80
     protocol: TCP
-    nodePort: 80
     name: http
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ssh
+  labels:
+    app: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 22
+    protocol: TCP
+    nodePort: 2222
+    name: ssh
   type: NodePort
 ---
 apiVersion: apps/v1

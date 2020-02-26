@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:04 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/25 20:06:00 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/26 21:59:59 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,3 +51,67 @@ spec:
           value: root
         - name: PMA_PASSWORD
           value: password
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    phpmyadmin.yaml                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/02/17 21:44:04 by oel-bour          #+#    #+#              #
+#    Updated: 2020/02/25 20:06:00 by oel-bour         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: phpmyadmin-service
+# spec:
+#   selector:
+#     app: phpmyadmin
+#   ports:
+#   - port: 5000
+#     nodePort: 5000
+#   type: NodePort
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: phpmyadmin
+#   labels:
+#     app: phpmyadmin
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: phpmyadmin
+#   template:
+#     metadata:
+#       labels:
+#         app: phpmyadmin
+#     spec:
+#       restartPolicy: Always
+#       containers:
+#       - name: phpmyadmin
+#         image: phpmyadmin_alpine
+#         imagePullPolicy: Never
+#         ports:
+#         - containerPort: 5000
+#         env:
+#         - name: MYSQL_HOST
+#           value: mysql 
+#         - name: PMA_USER
+#           value: root
+#         - name: PMA_PASSWORD
+#           value: password
+#         - name: MYSQL_ROOT_PASSWORD
+#           value: password
+#         - name:  PMA_PORT
+#           value: "3306"
+#         - name: PMA_ABSOLUTE_URI
+#           value: root
+#         - name: PMA_PASSWORD
+#           value: password
+#         - name: PMA_ARBITARY
+#           value: "1"
