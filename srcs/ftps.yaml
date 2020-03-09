@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:43:41 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/26 22:47:30 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/02/28 10:53:25 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,9 +19,41 @@ metadata:
 spec:
   ports:
     - port: 21
+      nodePort: 21
       name: ftps
     - port: 21000
+      nodePort: 21000
       name: ftps-data
+    - port: 21001
+      nodePort: 21001
+      name: ftps-data1
+    - port: 21002
+      nodePort: 21002
+      name: ftps-data2
+    - port: 21003
+      nodePort: 21003
+      name: ftps-data3
+    - port: 21004
+      nodePort: 21004
+      name: ftps-data4
+    - port: 21005
+      nodePort: 21005
+      name: ftps-data5
+    - port: 21006
+      nodePort: 21006
+      name: ftps-data6
+    - port: 21007
+      nodePort: 21007
+      name: ftps-data7
+    - port: 21008
+      nodePort: 21008
+      name: ftps-data8
+    - port: 21009
+      nodePort: 21009
+      name: ftps-data9
+    - port: 21010
+      nodePort: 21010
+      name: ftps-data10
   selector:
     app: ftps
   type: NodePort
@@ -60,20 +92,14 @@ spec:
       - image: ftps_alpine
         imagePullPolicy: Never
         name: ftps
-        env:
-        - name: FTP_USER
-          value: admin
-        - name: FTP_PASSWORD
-          value: admin
         ports:
         - containerPort: 21
-          hostPort: 21
         - containerPort: 21000
-          hostPort: 21000
         volumeMounts:
-        - name: ftps-persistent-storage
-          mountPath: /ftps
+          - mountPath: /ftps
+            name: ftps-volume
       volumes:
-      - name: ftps-persistent-storage
-        persistentVolumeClaim:
-          claimName: ftps-pv-claim
+      - name: ftps-volume
+        hostPath:
+          path: /home/docker/ftps
+          type: Directory

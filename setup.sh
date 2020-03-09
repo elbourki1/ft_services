@@ -6,7 +6,7 @@
 #    By: oel-bour <oel-bour@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/02/17 21:44:10 by oel-bour          #+#    #+#              #
-#    Updated: 2020/02/26 22:25:01 by oel-bour         ###   ########.fr        #
+#    Updated: 2020/03/08 20:19:21 by oel-bour         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,10 +17,10 @@ sleep 2
 
 echo "redeleting minikube and starting it"
 minikube start --cpus=2 --memory 2000 --vm-driver=virtualbox --extra-config=apiserver.service-node-port-range=1-35000
-# minikube addons enable metrics-server
 minikube addons enable ingress
 minikube addons enable dashboard
 sleep 10
+minikube ssh 'mkdir /home/docker/ftps'
 export MINIKUBE_IP=$(minikube ip)
 
 eval $(minikube docker-env)
@@ -30,8 +30,7 @@ cp srcs/ftps/srcs/start.sh srcs/ftps/srcs/start-tmp.sh
 sed -i '' "s/MINIKUBE_IP/$MINIKUBE_IP/g" srcs/ftps/srcs/start-tmp.sh
 cp srcs/wordpress/files/wordpress.sql srcs/wordpress/files/wordpress-tmp.sql
 sed -i '' "s/MINIKUBE_IP/$MINIKUBE_IP/g" srcs/wordpress/files/wordpress-tmp.sql
-# cp srcs/wordpress/files/word_4.sql srcs/wordpress/files/word_4-tmp.sql
-# sed -i '' "s/MINIKUBE_IP/$MINIKUBE_IP/g" srcs/wordpress/files/word_4-tmp.sql
+
 sleep 2
 echo "building images"
 echo "building wordpress_alpine"
@@ -51,7 +50,10 @@ docker build -t influxdb_alpine srcs/influxdb/
 sleep 2
 echo "building grafana_alpine "
 docker build -t grafana_alpine srcs/grafana/
-# docker build -t phpmyadmin_alpine srcs/phpmyadmin-s/
+sleep 2
+echo "building phpmyadmin_alpine "
+docker build -t phpmyadmin_alpine srcs/phpmyadmin/
+
 echo "deploying"
 kubectl apply -f srcs/mandatory.yaml
 kubectl apply -f srcs/wordpress.yaml
@@ -64,18 +66,20 @@ kubectl apply -f srcs/influxdb.yaml
 kubectl apply -f srcs/grafana.yaml
 
 sleep 60
-echo "creating database"
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql -u root -e 'CREATE DATABASE wordpress;'
+kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql -u root -e 'CREATE DATABASE phpmyadmin;'
 echo "importing database"
-sleep 5
+sleep 10
 kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql wordpress -u root < srcs/wordpress/files/wordpress-tmp.sql
-
+kubectl exec -i $(kubectl get pods | grep mysql | cut -d" " -f1) -- mysql phpmyadmin -u root < srcs/phpmyadmin/srcs/phpmyadmin.sql
+sleep 5
 rm -rf srcs/wordpress/files/wordpress-tmp.sql
 rm -rf srcs/ftps/srcs/start-tmp.sh
-
 echo "minikube ip is $MINIKUBE_IP"
-### Crash Container
-# kubectl exec -it $(kubectl get pods | grep mysql | cut -d" " -f1) -- /bin/sh -c "kill 1"
 
-### Export/Import Files from containers
-# kubectl cp srcs/grafana/grafana.db default/$(kubectl get pods | grep grafana | cut -d" " -f1):/var/lib/grafana/grafana.db
+### crash Container
+# kubectl exec -it $(kubectl get pods | grep mysql | cut -d" " -f1) -- /bin/sh -c "kill 1"
+#lftp ftp://admin@$(minikube ip)
+### export/Import Files from containers
+# kubectl cp  $(kubectl get pods | grep grafana | cut -d" " -f1):/grafana/data/grafana.db grafana.db
+

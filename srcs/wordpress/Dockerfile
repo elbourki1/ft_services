@@ -1,14 +1,12 @@
 FROM alpine:latest
 
-ENV TIMEZONE Europe/Paris
 ENV VERSION_WORDPRESS 4.9.6
 ENV SERVER_PATH /var/www
 
 # Installing dependencies
 RUN apk add --no-cache --virtual .build-deps unzip
-RUN apk add --no-cache php7 php7-xml php7-pdo php7-mcrypt php7-session php7-mysqli php7-zlib
+RUN apk add --no-cache php7 php7-apache2 php7-openssl php7-xml php7-pdo php7-mcrypt php7-session php7-mysqli php7-zlib su-exec
 # Work path
-RUN mkdir /var/www/
 WORKDIR /var/www/
 
 # Download & install wordpress
@@ -22,9 +20,9 @@ RUN unzip -q wordpress-${VERSION_WORDPRESS}.zip -d ./ && \
             ${SERVER_PATH}/readme.html && \
         apk del .build-deps
 
-COPY scripts/start.sh start.sh
+COPY scripts/start.sh /bin/start.sh
 COPY files/wp-config.php ${SERVER_PATH}/wp-config.php
 
-EXPOSE 80
+EXPOSE 5050
 
-ENTRYPOINT [ "./start.sh" ]
+ENTRYPOINT [ "sh","/bin/start.sh" ]

@@ -1,11 +1,11 @@
-FROM nginx:alpine
-
-RUN apk update && apk add openssl && apk add openssh 
-
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj '/C=MR/ST=37/L=BG/O=1337/CN=EL BOURKI' -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt && apk add openrc
-COPY srcs/nginx.conf etc/nginx/nginx.conf
+FROM alpine
+RUN mkdir /run/nginx/ 
+RUN apk update && apk add openrc openssl openssh nginx supervisor \
+&& ssh-keygen -A
+RUN apk update
+COPY srcs/default.conf /etc/nginx/conf.d
 COPY srcs/run.sh /
-COPY srcs/sshd_config /etc/ssh/sshd_config
-COPY srcs/index.html /usr/share/nginx/html/index.html
+RUN  echo "<h1>Hello Word!</h1>" > /var/www/localhost/htdocs/index.html
+COPY srcs/supervisord.conf /etc/
 EXPOSE 443 80 22
-CMD ["sh" , "run.sh"]
+ENTRYPOINT ["sh" , "run.sh"]

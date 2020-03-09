@@ -2,7 +2,6 @@
 
 if [ ! -d "/run/mysqld" ]; then
 	mkdir -p /run/mysqld
-	# chown -R mysql:mysql /run/mysqld
 fi
 
 if [ -d /var/lib/mysql/mysql ]; then
@@ -10,7 +9,6 @@ if [ -d /var/lib/mysql/mysql ]; then
 else
 	echo "[i] MySQL data directory not found, creating initial DBs"
 
-	# chown -R mysql:mysql /var/lib/mysql
 
 	# init database
 	echo 'Initializing database'

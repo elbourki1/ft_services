@@ -3,7 +3,7 @@ FROM alpine:3.7
 ENV INFLUXDB_VERSION 1.5.3
 ENV TELEGRAF_VERSION 1.6.3
 
-RUN apk add --no-cache su-exec
+RUN apk add --no-cache su-exec supervisor
 
 WORKDIR /scripts
 
@@ -28,6 +28,7 @@ RUN tar -C . -xzf telegraf-${TELEGRAF_VERSION}-static_linux_amd64.tar.gz && \
 
 COPY srcs/telegraf.conf /etc/telegraf/telegraf.conf
 COPY srcs/influxdb.conf /etc/influxdb/influxdb.conf
+COPY srcs/supervisord.conf /etc/
 VOLUME [ "/var/lib/influxdb" ]
 
 EXPOSE 8086

@@ -8,7 +8,7 @@ RUN apk update && \
 COPY scripts/start.sh /bin/start.sh
 COPY files/my.cnf /etc/mysql/my.cnf
 
-VOLUME ["/var/lib/mysql"]
+VOLUME ["/var/lib/mysqld"]
 
 EXPOSE 3306
 
